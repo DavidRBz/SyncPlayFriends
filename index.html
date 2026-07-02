@@ -36,14 +36,30 @@
 
         <!-- Tela da Sessão (Timers) -->
         <div id="session-screen" class="hidden">
-            <div class="flex flex-col sm:flex-row justify-between items-center bg-gray-800 p-4 rounded-lg mb-8 border border-gray-700">
-                <div class="mb-2 sm:mb-0">
-                    <span class="text-gray-400 text-sm">Sala: </span>
-                    <span id="room-id-display" class="font-mono font-bold text-indigo-400 bg-gray-900 px-2 py-1 rounded"></span>
+            <!-- Barra Superior de Controle e Status -->
+            <div class="flex flex-col md:flex-row justify-between items-center bg-gray-800 p-4 rounded-xl mb-8 border border-gray-700 gap-4">
+                <div class="flex items-center space-x-3">
+                    <span class="text-gray-400 text-sm">Sala:</span>
+                    <span id="room-id-display" class="font-mono font-bold text-indigo-400 bg-gray-900 px-3 py-1.5 rounded-lg text-lg"></span>
+                    
+                    <!-- Botão de Copiar com Ícone -->
+                    <button id="copy-link-btn" title="Copiar Link de Convite" class="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-center text-gray-300 hover:text-white">
+                        <svg id="copy-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                        <span id="copy-toast" class="hidden text-xs bg-emerald-600 text-white absolute transform -translate-y-8 px-2 py-1 rounded">Copiado!</span>
+                    </button>
                 </div>
-                <button id="copy-link-btn" class="text-sm bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded transition-colors">
-                    Copiar Link Convite
-                </button>
+
+                <!-- Painel de Ações do Criador (Oculto por padrão) -->
+                <div id="host-actions-panel" class="hidden flex flex-wrap gap-2 w-full md:w-auto justify-end">
+                    <button onclick="resetAllTimers()" class="bg-amber-600/20 hover:bg-amber-600 border border-amber-500/40 hover:border-amber-500 text-amber-300 hover:text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
+                        Resetar Todos
+                    </button>
+                    <button onclick="deleteRoom()" class="bg-red-600/20 hover:bg-red-600 border border-red-500/40 hover:border-red-500 text-red-400 hover:text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
+                        Excluir Sala
+                    </button>
+                </div>
             </div>
 
             <div id="timers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
