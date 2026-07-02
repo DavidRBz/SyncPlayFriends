@@ -1,16 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SyncPlay - Sincronização de Vídeo</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: { extend: { colors: { gray: { 900: '#111827', 800: '#1F2937', 700: '#374151' } } } }
-        }
-    </title>
 </head>
 <body class="bg-gray-900 text-white min-h-screen font-sans antialiased">
     <div class="container mx-auto px-4 py-8 max-w-5xl">
@@ -19,18 +13,19 @@
             <p class="text-gray-400">Sincronize a reprodução de vídeos locais com seus amigos</p>
         </header>
 
+        <!-- Tela de Setup (Criar/Entrar) -->
         <div id="setup-screen" class="max-w-md mx-auto bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700">
             <h2 id="setup-title" class="text-2xl font-semibold mb-6 text-center">Criar Sessão</h2>
             
             <div class="space-y-4">
                 <div id="name-container" class="hidden">
                     <label class="block text-sm text-gray-400 mb-1">Seu Nome</label>
-                    <input type="text" id="user-name" placeholder="Ex: João" class="w-full bg-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" id="user-name" placeholder="Ex: João" class="w-full bg-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white">
                 </div>
                 
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Senha da Sala (Opcional)</label>
-                    <input type="password" id="room-password" placeholder="Deixe em branco para sala pública" class="w-full bg-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="password" id="room-password" placeholder="Deixe em branco para sala pública" class="w-full bg-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white">
                 </div>
                 
                 <button id="action-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition-colors mt-4">
@@ -39,6 +34,7 @@
             </div>
         </div>
 
+        <!-- Tela da Sessão (Timers) -->
         <div id="session-screen" class="hidden">
             <div class="flex flex-col sm:flex-row justify-between items-center bg-gray-800 p-4 rounded-lg mb-8 border border-gray-700">
                 <div class="mb-2 sm:mb-0">
@@ -51,7 +47,8 @@
             </div>
 
             <div id="timers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                </div>
+                <!-- Os timers serão injetados aqui via JS -->
+            </div>
         </div>
     </div>
 
