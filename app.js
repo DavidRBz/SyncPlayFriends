@@ -114,7 +114,7 @@ async function joinRoom(name, password) {
 function renderTimers() {
     timersGrid.innerHTML = '';
     
-    // Renderiza o próprio usuário primeiro, depois os outros
+    // Organiza os uids para que o do usuário atual fique sempre no topo esquerdo
     const uids = Object.keys(localTimersState);
     uids.sort((a, b) => a === currentUser.uid ? -1 : 1);
 
@@ -123,30 +123,57 @@ function renderTimers() {
         const isMe = uid === currentUser.uid;
         
         const card = document.createElement('div');
-        card.className = `p-6 rounded-xl border ${isMe ? 'bg-gray-800 border-indigo-500 shadow-indigo-500/20 shadow-lg' : 'bg-gray-800 border-gray-700 opacity-80'}`;
+        card.className = `p-6 rounded-xl border flex flex-col justify-between ${isMe ? 'bg-gray-800 border-indigo-500 shadow-indigo-500/20 shadow-lg' : 'bg-gray-800 border-gray-700 opacity-80'}`;
         
         const statusColor = timerData.isRunning ? 'text-green-400' : 'text-yellow-500';
         const statusText = timerData.isRunning ? '▶ Rodando' : '⏸ Pausado';
 
         card.innerHTML = `
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg text-white">${timerData.name} ${isMe ? '(Você)' : ''}</h3>
-                <span class="text-xs font-semibold ${statusColor}">${statusText}</span>
-            </div>
-            <div class="text-center mb-6">
-                <div id="display-${uid}" class="text-5xl font-mono tracking-wider font-light">
-                    00:00:00
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg text-white truncate max-w-[150px]">${timerData.name} ${isMe ? '(Você)' : ''}</h3>
+                    <span class="text-xs font-semibold ${statusColor}">${statusText}</span>
+                </div>
+                <div class="text-center mb-6">
+                    <div id="display-${uid}" class="text-5xl font-mono tracking-wider font-light">
+                        00:00:00
+                    </div>
                 </div>
             </div>
+
             ${isMe ? `
-            <div class="flex justify-center space-x-3">
-                <button onclick="adjustTime(-1)" class="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm font-bold">-1s</button>
-                <button onclick="togglePlayPause()" class="bg-indigo-600 hover:bg-indigo-500 px-6 py-2 rounded font-bold shadow-lg">
-                    ${timerData.isRunning ? 'Pausar' : 'Play'}
+            <div class="space-y-4 pt-2 border-t border-gray-700">
+                <!-- Controles de Fluxo Principais -->
+                <div class="flex justify-center space-x-2">
+                    <button onclick="adjustTime(-1)" class="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm font-bold transition-colors">-1s</button>
+                    <button onclick="togglePlayPause()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded font-bold shadow-lg transition-colors text-center text-sm">
+                        ${timerData.isRunning ? 'Pausar' : 'Play'}
+                    </button>
+                    <button onclick="adjustTime(1)" class="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm font-bold transition-colors">+1s</button>
+                </div>
+
+                <!-- Entrada Manual Avançada -->
+                <div class="bg-gray-900/50 p-3 rounded-lg space-y-2 border border-gray-700/50">
+                    <span class="block text-xs text-gray-400 text-center font-medium">Definir Tempo Manual</span>
+                    <div class="flex items-center justify-center space-x-1">
+                        <input type="number" id="manual-h" placeholder="HH" min="0" max="99" class="w-12 bg-gray-700 text-center rounded py-1 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                        <span class="text-gray-500 font-bold">:</span>
+                        <input type="number" id="manual-m" placeholder="MM" min="0" max="59" class="w-12 bg-gray-700 text-center rounded py-1 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                        <span class="text-gray-500 font-bold">:</span>
+                        <input type="number" id="manual-s" placeholder="SS" min="0" max="59" class="w-12 bg-gray-700 text-center rounded py-1 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                        
+                        <button onclick="setManualTime()" class="ml-2 bg-emerald-600 hover:bg-emerald-500 p-1.5 rounded text-xs font-bold transition-colors">
+                            Definir
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Botão de Descarte / Reset -->
+                <button onclick="resetTimer()" class="w-full bg-gray-700/50 hover:bg-red-950/40 hover:text-red-400 hover:border-red-900 border border-transparent text-gray-400 py-1.5 rounded text-xs font-semibold transition-all">
+                    Resetar Temporizador
                 </button>
-                <button onclick="adjustTime(1)" class="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm font-bold">+1s</button>
             </div>
-            ` : `<div class="text-center text-xs text-gray-500 mt-4">Somente Leitura</div>`}
+            ` : `<div class="text-center text-xs text-gray-500 pt-4 border-t border-gray-700/40">Modo Leitura</div>`}
         `;
         timersGrid.appendChild(card);
     });
@@ -177,7 +204,7 @@ function formatTime(seconds) {
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
-// === 6. CONTROLES DO USUÁRIO (Exportados para o escopo global para o onclick do HTML) ===
+// === 6. CONTROLES DO USUÁRIO (Exportados para escopo global) ===
 window.togglePlayPause = async () => {
     const myState = localTimersState[currentUser.uid];
     const newTime = calculateCurrentTime(myState);
@@ -197,6 +224,41 @@ window.adjustTime = async (seconds) => {
     
     await update(myTimerRef, {
         currentTime: newTime,
+        updatedAt: Date.now()
+    });
+};
+
+// Nova Função: Processamento da Entrada Numérica Manual
+window.setManualTime = async () => {
+    const hInput = document.getElementById('manual-h').value;
+    const mInput = document.getElementById('manual-m').value;
+    const sInput = document.getElementById('manual-s').value;
+
+    // Converte os inputs em inteiros tratando campos vazios como zero
+    const hours = Math.max(0, parseInt(hInput) || 0);
+    const minutes = Math.min(59, Math.max(0, parseInt(mInput) || 0));
+    const seconds = Math.min(59, Math.max(0, parseInt(sInput) || 0));
+
+    // Cálculo totalizador em segundos lineares
+    const totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
+
+    const myState = localTimersState[currentUser.uid];
+    const myTimerRef = ref(db, `rooms/${currentRoom}/timers/${currentUser.uid}`);
+    
+    await update(myTimerRef, {
+        currentTime: totalSeconds,
+        updatedAt: Date.now() // Reseta a janela delta de tempo contínuo
+    });
+};
+
+// Nova Função: Reset Total do Estado do Relógio
+window.resetTimer = async () => {
+    const myTimerRef = ref(db, `rooms/${currentRoom}/timers/${currentUser.uid}`);
+    
+    // Força o relógio a pausar e limpa o valor acumulado para zero absoluto
+    await update(myTimerRef, {
+        isRunning: false,
+        currentTime: 0,
         updatedAt: Date.now()
     });
 };
